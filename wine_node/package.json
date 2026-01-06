@@ -1,0 +1,16 @@
+{
+  "name": "wine_node",
+  "version": "1.0.0",
+  "description": "Backend for Temperature and Humidity Monitering System",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Trevor Young",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.2.1",
+    "nodemon": "^3.1.11"
+  }
+}
