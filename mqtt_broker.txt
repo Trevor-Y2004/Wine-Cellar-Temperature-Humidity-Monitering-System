@@ -1,0 +1,22 @@
+The MQTT broker was made by using portainers GUI, but the docker_compose.yaml file for the
+mqtt instance is in the works. Below are the configuration options used for the broker 
+creation. 
+
+Before Container creation go to Volumes and create your three volumes listed below.
+
+Settings for mqtt creation:
+Name: mqtt
+Image: https://hub.docker.com/_/eclipse-mosquitto
+Port mapping: 1883:1883->tcp
+Access control: Administrators
+Commands&Logging: Interactive
+Volumes: 
+- mqtt_config:/mosquitto/config
+- mqtt_data:/mosquitto/data
+- mqtt_log:/mosquitto/log
+
+Network:
+- bridge
+
+Restart:
+- unless stopped
