@@ -3,25 +3,21 @@ from machine import Pin
 import onewire
 import ds18x20
 import network
+import ujson as json
 
 from picozero import pico_temp_sensor
 import my_network
 import ap_config
-import http_calls
+import mqtt
 
 
-LOW_THRESH = 50
+LOW_THRESH = 40
 HIGH_THRESH = 90
 
-#addresses to pass to the REST API, should letter be passed in a config file so that the values are not hardcoded
-URL_TELEM = 'http://localhost:3000/api/telemetry'
-URL_THRESH = 'http://localhost:3000/api/threshold'
-URL_STATUS = 'http://localhost:3000/api/status'
+WLAN_CHECK_CONNECTION = 10  
 
 SSID = None
 PASSWORD = None
-
-WLAN_CHECK = 10  #check connection every 10 seconds
 
 def url_decode(cred):
     cred = cred.replace('+', ' ')
@@ -41,7 +37,11 @@ def ensure_connection(sta_if, ssid, password, last_attempt):
     
 def run_thermo():
     #wlan object creation
-    sta_if = network.WLAN(network.STA_IF) 
+    sta_if = network.WLAN(network.STA_IF)
+    
+    #mqtt client connection
+    client = mqtt.mqtt_client()
+    
     #DS18B20 Setup
     #data line connected to digital pin 34, ow is now an object that can send data and power over a single data line
     #ds is a driver class for the wire object
@@ -59,7 +59,7 @@ def run_thermo():
     #main loop to read temp and send
     while True:     
         #checks connection every 10 seconds, represented in miliseconds
-        if ticks_diff(ticks_ms(), last_wlan_check) >= WLAN_CHECK * 1000:
+        if ticks_diff(ticks_ms(), last_wlan_check) >= WLAN_CHECK_CONNECTION * 1000:
             last_wlan_check_time = ticks_ms()
             last_wlan_check = ensure_connection(sta_if, SSID, PASSWORD, last_wlan_check_time)
         
@@ -85,7 +85,7 @@ def run_thermo():
                     "deviceID": "pico-01",
                     "tempF": temp_f
                     }
-                http_calls(URL_THRESH, payload)
+                mqtt.publish(client, "iot/threshold", payload)
                 print('Temp threshold exceeded!', temp_f)
                 
             elif (temp_f < LOW_THRESH and low == False):
@@ -95,7 +95,7 @@ def run_thermo():
                     "deviceID": "pico-01",
                     "tempF": temp_f
                     }
-                http_calls.http_push(URL_THRESH, payload)
+                mqtt.publish(client, "iot/threshold", payload)
                 print('Temp threshold exceeded!', temp_f)
                 
         else:
@@ -103,12 +103,16 @@ def run_thermo():
             low = False
             print('Temp', temp_f)
         
+        print("STA active:", sta_if.active(), "connected:", sta_if.isconnected(), "ifconfig:", sta_if.ifconfig())
+        
         payload = {
                     "deviceID": "pico-01",
                     "tempF": temp_f
                     }
-        http_calls.http_push(URL_TELEM, payload)
-        http_calls.http_push(URL_STATUS, payload)
+        mqtt.publish(client, "iot/telemetry", json.dumps(payload).encode("utf-8"))
+        
+        #should add in a graceful shutdown - press the bootsel button
+        #and wifi and mqtt connections are killed(and mem is wiped?)
         
     
 def celsius_to_faren(temp_c):
@@ -145,9 +149,3 @@ def main ():
 if __name__ == "__main__":
     main()
     
-
-
-
-
-
-
