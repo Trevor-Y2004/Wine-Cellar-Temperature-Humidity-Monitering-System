@@ -1,8 +1,8 @@
 {
   "name": "wine_node",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Backend for Temperature and Humidity Monitering System",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "start": "node server/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -11,6 +11,8 @@
   "license": "ISC",
   "dependencies": {
     "express": "^5.2.1",
+    "mqt": "^1.0.2",
+    "mqtt": "^5.14.1",
     "nodemon": "^3.1.11"
   }
 }
