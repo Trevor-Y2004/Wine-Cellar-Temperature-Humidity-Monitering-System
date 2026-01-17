@@ -21,10 +21,10 @@ temp_c = -45 + (175 * temp_raw / 65535)
 
 temp_f = temp_c * 9/5 +32
 
-# Calculate humidity in percent
-hum_raw = data[3] * 256 + data[4]
+#calculating the humidity in percent
+hum_raw = data[3] * 256 +data[4]
 humidity = 100 * hum_raw/ 65535
 
-# Print results
+#temp and humdiity results
 print("Temperature:", temp_f, "°F")
 print("Humidity:", humidity, "%")
