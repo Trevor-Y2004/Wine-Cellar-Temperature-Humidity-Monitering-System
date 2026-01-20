@@ -1,23 +1,45 @@
-// routes/products.js
 const express = require('express');
 const router = express.Router();
+const collections = require('../controllers/collections');
 
-// Define a route
+
+// Health check
+// GET /api
 router.get('/', (req, res) => {
-    res.send('this is an api route');// this gets executed when user visit http://localhost:3000/api
+    res.send('API is running');
 });
 
-router.get('/telemetry', (req, res) => {
-    res.send('this is api telemtry route');// this gets executed when user visit http://localhost:3000/api/telemetry
+// Trigger alert manually (curl demo)
+// GET /api/check-alert?temp=95&humidity=65
+router.get('/check-alert', async (req, res) => {
+    try {
+        const temp = req.query.temp ? Number(req.query.temp) : 95;
+        const humidity = req.query.humidity
+            ? Number(req.query.humidity)
+            : null;
+
+        const result = await collections.checkAndAlert(
+            'pico1',
+            temp,
+            humidity
+        );
+
+        res.json({
+            success: true,
+            input: {
+                deviceId: 'pico1',
+                tempF: temp,
+                humidity
+            },
+            result
+        });
+    } catch (err) {
+        console.error('[API ERROR]', err);
+        res.status(500).json({
+            success: false,
+            error: err.message
+        });
+    }
 });
 
-router.get('/threshold', (req, res) => {
-    res.send('this is api threshold route');// this gets executed when user visit http://localhost:3000/api/threshold
-});
-
-router.get('/status', (req, res) => {
-    res.send('this is api status route');// this gets executed when user visit http://localhost:3000/api/status
-});
-
-// export the router module so that server.js file can use it
 module.exports = router;
