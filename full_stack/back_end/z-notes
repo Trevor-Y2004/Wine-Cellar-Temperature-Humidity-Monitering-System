@@ -1,0 +1,21 @@
+Notes on what to fix:
+Routes should act as a traffic cop, only pointing the application to where it should be and where it should go. It should, ideally, be calling the controlllers folder for its logic.
+
+FIles:
+server.js - entry point, creates the app and plugs everything together
+routes/ - creates URL routes (wine_node/user) (wine_node/user/101) etc.
+controllers/ - validates inputs, calls services/nodes
+middleware/ - rules that apply before the logic runs(rejects bad requests, 
+  contains security protocols like Authentication, Authorization, Rate limiting, 
+  Input validation, IP allow/deny, CORS)
+  also handles infrastructure needs like parsing, logging, error handling, etc. 
+models/ - defines how data is stored and retrived in a database
+.env - for secrets(api keys, port numbers, etc)
+package.json - defines how to run the app
+
+
+
+
+
+middleware answers, "should this request proceed?"
+controllers answers, "How should this request be handled?"
