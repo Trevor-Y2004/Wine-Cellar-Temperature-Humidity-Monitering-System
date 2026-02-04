@@ -1,9 +1,0 @@
-#dependencies
-node_modules
-
-#super secret secrets(dont inject apis into the build, inject at runtime)
-.env
-
-#git
-.git
-.gitignore
