@@ -16,6 +16,7 @@ HIGH_THRESH = 90
 
 WLAN_CHECK_CONNECTION = 10  
 
+##passed in during main
 SSID = None
 PASSWORD = None
 
